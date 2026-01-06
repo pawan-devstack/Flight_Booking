@@ -1,0 +1,92 @@
+{
+  "hotels": [
+    {
+      "name": "Hotel Palace Delhi",
+      "rating": 4.2,
+      "price": "₹1,299",
+      "image": "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=300&fit=crop",
+      "location": "Karol Bagh • Good 124 reviews",
+      "category": "Budget"
+    },
+    {
+      "name": "Treebo Corporate Park",
+      "rating": 4.1,
+      "price": "₹1,599",
+      "image": "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=400&h=300&fit=crop",
+      "location": "Connaught Place • Good 245 reviews",
+      "category": "Budget"
+    },
+    {
+      "name": "Super Townhouse RBL",
+      "rating": 4.3,
+      "price": "₹2,999",
+      "image": "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400&h=300&fit=crop",
+      "location": "South Extension • Very Good 456 reviews",
+      "category": "Mid-Range"
+    },
+    {
+      "name": "Bloomrooms Delhi",
+      "rating": 4.4,
+      "price": "₹2,799",
+      "image": "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=300&fit=crop&random=6",
+      "location": "Janakpuri • Very Good 321 reviews",
+      "category": "Mid-Range"
+    },
+    {
+      "name": "Le Meridien New Delhi",
+      "rating": 4.7,
+      "price": "₹6,999",
+      "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=400&h=300&fit=crop",
+      "location": "Windsor Place • Excellent 1,234 reviews",
+      "category": "Luxury"
+    },
+    {
+      "name": "Taj Palace Delhi",
+      "rating": 4.8,
+      "price": "₹12,499",
+      "image": "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=400&h=300&fit=crop",
+      "location": "Chanakyapuri • Outstanding 2,156 reviews",
+      "category": "Luxury"
+    },
+    {
+      "name": "ITC Maurya",
+      "rating": 4.9,
+      "price": "₹15,999",
+      "image": "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400&h=300&fit=crop&random=9",
+      "location": "Chanakyapuri • Outstanding 3,456 reviews",
+      "category": "Luxury"
+    },
+    {
+      "name": "Hotel City Park",
+      "rating": 4.0,
+      "price": "₹999",
+      "image": "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=400&h=300&fit=crop&random=10",
+      "location": "Narela • Good 89 reviews",
+      "category": "Budget"
+    },
+    {
+      "name": "Radisson Blu Kaushambi",
+      "rating": 4.5,
+      "price": "₹4,499",
+      "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=400&h=300&fit=crop&random=13",
+      "location": "Ghaziabad • Great 789 reviews",
+      "category": "Mid-Range"
+    },
+    {
+      "name": "The Lalit New Delhi",
+      "rating": 4.6,
+      "price": "₹8,999",
+      "image": "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=400&h=300&fit=crop&random=14",
+      "location": "Connaught Place • Excellent 1,567 reviews",
+      "category": "Luxury"
+    },
+    {
+      "name": "Shangri-La Eros Delhi",
+      "rating": 4.8,
+      "price": "₹11,499",
+      "image": "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=300&fit=crop&random=15",
+      "location": "Ashoka Road • Outstanding 2,345 reviews",
+      "category": "Luxury"
+    }
+  ]
+}
