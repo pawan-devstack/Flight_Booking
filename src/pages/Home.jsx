@@ -1,10 +1,15 @@
 import { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { FaBus } from "react-icons/fa"
+import { FaPlane } from "react-icons/fa"
+import Hotelcard from '../component/Hotelcard'
+import Flightcard from '../component/Flightcard'
 import Busescard from '../component/Buscard'
+import Trainscard from '../component/Traincard'
+import { useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-const Buses = () => {
+const Home = () => {
   const [tripType, setTripType] = useState("One Way");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
@@ -15,33 +20,47 @@ const Buses = () => {
   const [adults, setAdults] = useState(1);
   const [children, setChildren] = useState(0);
   const [infants, setInfants] = useState(0);
-  const [travelClass, setTravelClass] = useState("Sleeper");
+  const [travelClass, setTravelClass] = useState("Business");
+  const navigate = useNavigate();
 
-  const videoPath= '/busvideo.mp4'
+  const videoPath = '/formbgvideo.mp4'
 
   const total = adults + children + infants;
   const displayTravellers = `${total} Traveller${total !== 1 ? 's' : ''}, ${travelClass}`;
+
+  const handleSearch = () => {
+  const searchParams = new URLSearchParams({
+    from: from || '',
+    to: to || '',
+    tripType,
+    travelClass,
+    total: total.toString(),
+    departure: departure?.toISOString()?.split('T')[0] || ''
+  });
+  navigate(`/flightsresults?${searchParams.toString()}`);
+};
+
 
   return (
     <>
       {/* Main Search Form */}
       <div className="relative max-w-8xl p-3 sm:p-4 lg:p-6 bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl mt-4 mb-6 mx-7">
-                <video src={videoPath} type='video/mp4' autoPlay
+        <video src={videoPath} type='video/mp4' autoPlay
           loop
           muted
           playsInline
-          className="absolute inset-0 w-full h-full object-fill -z-10 rounded-3xl"></video>
+          className="absolute inset-0 w-full h-full object-cover object-center -z-10 rounded-3xl"></video>
         <h2 className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl lg:text-2xl font-bold mb-4 sm:mb-6">
-          Search Your Bus
-          <FaBus className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 flex-shrink-0" />
+          Search Your Flight
+          <FaPlane className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 shrink-0" />
         </h2>
 
         {/* Grid Layout */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-2 sm:gap-3 lg:gap-4 items-end mb-4 sm:mb-6 w-full min-h-[110px] sm:min-h-[130px] lg:min-h-[140px]">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-2 sm:gap-3 lg:gap-4 items-end mb-4 sm:mb-6 w-full min-h-[110px] sm:min-h-32.5 lg:min-h-35">
 
           {/* Trip Type */}
           <div className="lg:col-span-2 col-span-full md:col-span-1">
-            <label className="block text-xs sm:text-sm text-gray-500 mb-1.5 sm:mb-2">Trip Type</label>
+            <label className="block text-xs sm:text-sm text-black font-bold mb-1.5 sm:mb-2">Trip Type</label>
             <div className="flex bg-gray-50 rounded-2xl p-0.5 sm:p-1 lg:p-2 border h-12 sm:h-14 lg:h-16">
               <button
                 onClick={() => setTripType("One Way")}
@@ -66,7 +85,7 @@ const Buses = () => {
 
           {/* From */}
           <div className="lg:col-span-2">
-            <label className="block text-xs sm:text-sm text-gray-500 mb-1.5 sm:mb-2">From</label>
+            <label className="block text-xs sm:text-sm text-black font-bold mb-1.5 sm:mb-2">From</label>
             <input
               type="text"
               placeholder="From"
@@ -78,7 +97,7 @@ const Buses = () => {
 
           {/* To */}
           <div className="lg:col-span-2">
-            <label className="block text-xs sm:text-sm text-gray-500 mb-1.5 sm:mb-2">To</label>
+            <label className="block text-xs sm:text-sm text-black font-bold mb-1.5 sm:mb-2">To</label>
             <input
               type="text"
               placeholder="To"
@@ -90,7 +109,7 @@ const Buses = () => {
 
           {/* Departure */}
           <div className="lg:col-span-2">
-            <label className="block text-xs sm:text-sm text-gray-500 mb-1.5 sm:mb-2">Departure</label>
+            <label className="block text-xs sm:text-sm text-black font-bold mb-1.5 sm:mb-2">Departure</label>
             <DatePicker
               selected={departure}
               onChange={setDeparture}
@@ -98,13 +117,14 @@ const Buses = () => {
               className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl border-2 border-gray-200 focus:border-blue-400 focus:outline-none bg-gray-50 text-sm cursor-pointer text-left h-12 sm:h-14 lg:h-16"
               placeholderText="Select date"
               minDate={new Date()}
-              calendarClassName="rounded-2xl border-blue-200 shadow-2xl z-50"
+              popperClassName="z-[9999]"
+              calendarClassName="rounded-2xl border-blue-200 shadow-2xl z-[9999]"
             />
           </div>
 
           {/* Return */}
           <div className="lg:col-span-2">
-            <label className="block text-xs sm:text-sm text-gray-500 mb-1.5 sm:mb-2">Return</label>
+            <label className="block text-xs sm:text-sm text-black font-bold mb-1.5 sm:mb-2">Return</label>
             <DatePicker
               selected={tripType === "Round Trip" ? returnDate : null}
               onChange={tripType === "Round Trip" ? setReturnDate : undefined}
@@ -116,19 +136,21 @@ const Buses = () => {
               placeholderText={tripType === "One Way" ? "Select Round Trip" : "Select date"}
               minDate={departure}
               disabled={tripType === "One Way"}
+              popperClassName="z-50"
+              calendarClassName="rounded-2xl border-blue-200 shadow-2xl z-1000"
             />
           </div>
 
           {/* Travellers & Class */}
           <div className="lg:col-span-2 col-span-full md:col-auto">
-            <label className="block text-xs sm:text-sm text-gray-500 mb-1.5 sm:mb-2">Travellers & Class</label>
+            <label className="block text-xs sm:text-sm text-black font-bold mb-1.5 sm:mb-2">Travellers & Class</label>
             <div className="relative w-full">
               <button
                 onClick={() => setOpen(!open)}
                 className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl border-2 border-orange-200 bg-gradient-to-r from-orange-50 to-yellow-50 text-sm font-semibold text-gray-800 flex items-center justify-between h-12 sm:h-14 lg:h-16 hover:shadow-md transition-all group"
               >
                 <span className="truncate max-w-[70%]">{displayTravellers}</span>
-                <svg className="w-4 h-4 flex-shrink-0 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 shrink-0 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
@@ -138,7 +160,7 @@ const Buses = () => {
                     scrollbarWidth: 'none',
                     msOverflowStyle: 'none',
                   }}
-                  className="absolute top-full left-0 right-0 sm:-left-4 md:-left-12 lg:-left-32 xl:-left-48 lg:left-auto lg:right-0 mt-3 w-full sm:w-96 lg:w-[380px] max-w-[95vw] bg-white/98 backdrop-blur-xl rounded-3xl shadow-2xl border p-4 sm:p-6 z-50 max-h-96 overflow-y-auto ">
+                  className="absolute top-full left-0 right-0 sm:-left-4 md:-left-12 lg:-left-32 xl:-left-48 lg:right-0 mt-3 w-full sm:w-96 lg:w-[380px] max-w-[95vw] bg-white/98 backdrop-blur-xl rounded-3xl shadow-2xl border p-4 sm:p-6 z-50 max-h-96 overflow-y-auto ">
                   <h3 className="font-semibold text-base sm:text-lg mb-4">Travellers & Class</h3>
 
                   {/* Counters */}
@@ -174,7 +196,7 @@ const Buses = () => {
                   <div className="mt-6 py-3 border-t">
                     <p className="text-sm font-semibold mb-3">Class</p>
                     <div className="grid grid-cols-3 gap-2">
-                      {["Ac", "Non-Ac", "Sleeper"].map((cls) => (
+                      {["Economy", "Premium Economy", "Business"].map((cls) => (
                         <button
                           key={cls}
                           onClick={() => setTravelClass(cls)}
@@ -206,15 +228,21 @@ const Buses = () => {
 
         {/* Search Button */}
         <div className="flex justify-center pt-4 sm:pt-6">
-          <button className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg bg-transparent text-black font-extrabold py-3.5 sm:py-4 px-6 sm:px-8 rounded-2xl text-lg shadow-xl hover:-translate-y-0.5 hover:scale-[1.02] transition-all duration-200"
-          >
-             Search Buses
+          <button onClick={handleSearch} className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg bg-blue-600  text-white py-3.5 sm:py-4 px-6 sm:px-8 rounded-2xl font-bold text-sm shadow-xl hover:from-orange-600 hover:to-orange-700 hover:-translate-y-0.5 hover:scale-[1.02] transition-all duration-200">
+            Search Flights
           </button>
         </div>
       </div>
+<div className="relative z-0">
+
+      <Flightcard />
+      <Hotelcard />
       <Busescard />
+      <Trainscard />
+</div>
+
     </>
   );
 };
 
-export default Buses
+export default Home

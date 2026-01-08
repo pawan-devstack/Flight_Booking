@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 
 const Loginpage = () => {
   const navigate = useNavigate()
-  const videoPath ='/bgvideo.mp4'
+  const videoPath = '/bgvideo.mp4'
 
   const [formdata, setFormdata] = useState({
     email: '',
@@ -24,7 +24,7 @@ const Loginpage = () => {
     e.preventDefault()
     setIsSubmitting(true)
 
-    const savedUser = localStorage.getItem('userdata')
+    const savedUser = localStorage.getItem('users')
 
     if (!savedUser) {
       seterror('No account found! Please signup first.')
@@ -32,11 +32,14 @@ const Loginpage = () => {
       return
     }
 
-    const userData = JSON.parse(savedUser)
+    const allUsers = JSON.parse(localStorage.getItem('users')) || []
+    const userData = allUsers.find(
+      (user) => user.email === formdata.email && user.password === formdata.password)
 
-    if (formdata.email === userData.email && formdata.password === userData.password) {
+    if (userData) {
       localStorage.setItem('isLoggedIn', 'true')
       localStorage.setItem('currentUser', JSON.stringify(userData))
+      localStorage.setItem('userdata', JSON.stringify(userData))
 
       alert(`✅ Welcome back, ${userData.name} ${userData.lastname}!`)
       setIsSubmitting(false)
@@ -57,7 +60,7 @@ const Loginpage = () => {
         loop
         muted
         playsInline
-        className="absolute fixed"></video>
+        className="fixed"></video>
       <h1 className="text-4xl md:text-5xl font-bold text-black mb-8 text-center drop-shadow-lg uppercase tracking-wide">
         Login
       </h1>
@@ -86,7 +89,7 @@ const Loginpage = () => {
         {/* Error Display */}
         {error && (
           <div
-            className="bg-red-500/20 border-2 border-red-400 text-red-200 p-4 rounded-xl backdrop-blur-sm text-sm leading-relaxed"
+            className="bg-red-500/20 border-2 border-red-400 text-black p-4 rounded-xl backdrop-blur-sm text-sm leading-relaxed"
             dangerouslySetInnerHTML={{ __html: error }}
           />
         )}
@@ -96,8 +99,8 @@ const Loginpage = () => {
             type="submit"
             disabled={isSubmitting}
             className={`relative flex-1 py-4 px-8 rounded-xl font-bold text-xl shadow-2xl transition-all duration-300 transform hover:-translate-y-2 ${isSubmitting
-                ? 'bg-gray-500 border-gray-400 cursor-not-allowed'
-                : 'bg-white text-purple-600 hover:bg-purple-100 border-4 border-white shadow-xl'
+              ? 'bg-gray-500 border-gray-400 cursor-not-allowed'
+              : 'bg-white text-purple-600 hover:bg-purple-100 border-4 border-white shadow-xl'
               }`}
           >
             {isSubmitting ? 'Logging In...' : 'Login'}

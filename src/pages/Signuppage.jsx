@@ -14,6 +14,14 @@ const Signuppage = () => {
     confirmPassword: '',
   })
 
+  const [passwordChecks, setPasswordChecks] = useState({
+    hasUpper: false,
+    hasLower: false,
+    hasNumber: false,
+    hasSpecial: false,
+    minLength: false
+  });
+
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, seterror] = useState({})
 
@@ -26,19 +34,47 @@ const Signuppage = () => {
       delete newError[name]
       seterror(newError)
     }
+    if (name === 'password') {
+      setPasswordChecks({
+        hasUpper: /[A-Z]/.test(value),
+        hasLower: /[a-z]/.test(value),
+        hasNumber: /[0-9]/.test(value),
+        hasSpecial: /[!@#$%^&*(),.?":{}|<>]/.test(value),
+        minLength: value.length >= 8,
+      })
+    }
   }
 
   const handlesubmit = (e) => {
     e.preventDefault()
     const newerror = {}
 
+    // Tumhare existing validations...
     if (!formdata.name) newerror.name = 'First name is required'
     if (!formdata.lastname) newerror.lastname = 'Last name is required'
     if (!formdata.email) newerror.email = 'Email is required'
     if (!formdata.gender) newerror.gender = 'Gender is required'
     if (!formdata.password) newerror.password = 'Password is required'
-    if (formdata.password !== formdata.confirmPassword) newerror.confirmPassword = 'Passwords do not match'
-    if (formdata.password && formdata.password.length < 6) newerror.password = 'Password must be at least 6 characters long'
+    if (!formdata.confirmPassword) newerror.confirmPassword = 'Confirm password is required'
+    if (
+      formdata.password &&
+      formdata.confirmPassword &&
+      formdata.password !== formdata.confirmPassword
+    ) {
+      newerror.confirmPassword = 'Passwords do not match'
+    }
+
+    // ✅ NEW: Password strength check
+    const isStrong =
+      passwordChecks.hasUpper &&
+      passwordChecks.hasLower &&
+      passwordChecks.hasNumber &&
+      passwordChecks.hasSpecial &&
+      passwordChecks.minLength;
+
+    if (!isStrong) {
+      newerror.password = 'Password must contain: Uppercase, Lowercase, Number, Special char & min 8 chars';
+    }
 
     if (Object.keys(newerror).length > 0) {
       seterror(newerror)
@@ -48,7 +84,11 @@ const Signuppage = () => {
     setIsSubmitting(true)
     const userdata = { ...formdata }
     delete userdata.confirmPassword
-    localStorage.setItem('userdata', JSON.stringify(userdata))
+
+    let allUsers = JSON.parse(localStorage.getItem('users')) || [];
+    allUsers.push(userdata);
+    localStorage.setItem('users', JSON.stringify(allUsers));
+    localStorage.setItem('userdata', JSON.stringify(userdata));
 
     alert(`✅ Signup Successful! Welcome, ${formdata.name} ${formdata.lastname}`)
     setIsSubmitting(false)
@@ -66,7 +106,7 @@ const Signuppage = () => {
           loop
           muted
           playsInline
-          className="absolute fixed"></video>
+          className="fixed"></video>
         <h1 className='text-4xl md:text-5xl font-bold text-black mb-8 text-center drop-shadow-lg uppercase tracking-wide'>
           Sign Up
         </h1>
@@ -138,11 +178,11 @@ const Signuppage = () => {
               name="password"
               value={formdata.password}
               onChange={handlechange}
-              placeholder='Password (min 6 chars)'
+              placeholder='Password (min 8 chars)'
               className={`w-full p-3 rounded-lg border-2 focus:outline-none transition-all duration-300 transform focus:scale-105 placeholder-black bg-white/10 backdrop-blur-sm ${error.password ? 'border-red-400' : 'border-white'
                 }`}
             />
-            {error.password && <p className='text-red-300 text-sm mt-1 ml-2'>{error.password}</p>}
+            {error.password && <p className="bg-red-500/20 border-2 border-red-400 text-black mt-3 p-4 rounded-xl backdrop-blur-sm text-sm leading-relaxed">{error.password}</p>}
           </div>
 
           {/* Confirm Password */}
@@ -156,7 +196,7 @@ const Signuppage = () => {
               className={`w-full p-3 rounded-lg border-2 focus:outline-none transition-all duration-300 transform focus:scale-105 placeholder-black bg-white/10 backdrop-blur-sm ${error.confirmPassword ? 'border-red-400' : 'border-white'
                 }`}
             />
-            {error.confirmPassword && <p className='text-red-300 text-sm mt-1 ml-2'>{error.confirmPassword}</p>}
+            {error.confirmPassword && <p className='bg-red-500/20 border-2 border-red-400 text-black mt-3 p-4 rounded-xl backdrop-blur-sm text-sm leading-relaxed'>{error.confirmPassword}</p>}
           </div>
 
           {/* Buttons */}
@@ -165,8 +205,8 @@ const Signuppage = () => {
               type="submit"
               disabled={isSubmitting}
               className={`relative flex-1 py-4 px-8 rounded-xl font-bold text-xl shadow-2xl transition-all duration-300 transform hover:-translate-y-2 ${isSubmitting
-                  ? 'bg-gray-500 border-gray-400 cursor-not-allowed'
-                  : 'bg-white text-purple-600 hover:bg-purple-100 border-4 border-white shadow-xl'
+                ? 'bg-gray-500 border-gray-400 cursor-not-allowed'
+                : 'bg-white text-purple-600 hover:bg-purple-100 border-4 border-white shadow-xl'
                 }`}
             >
               {isSubmitting ? 'Signing Up...' : 'Signup'}

@@ -15,7 +15,7 @@ const Navbar = () => {
 
   useEffect(() => {
     const userdata = localStorage.getItem("userdata");
-    const currentUser = localStorage.getItem("current_user");
+    const currentUser = localStorage.getItem("currentuser");
 
     if (userdata) {
       try {
@@ -27,7 +27,7 @@ const Navbar = () => {
     } else if (currentUser) {
       try {
         const user = JSON.parse(currentUser);
-        setUserName(`${user.fname} ${user.lname}`);
+        setUserName(`${user.name} ${user.lastname}`);
       } catch (e) {
         console.error("current_user parse error:", e);
       }
@@ -35,8 +35,12 @@ const Navbar = () => {
   }, []);
 
   const handleLogout = () => {
+    localStorage.removeItem("userdata");
+    localStorage.removeItem("currentuser");
     localStorage.removeItem("user");
     localStorage.removeItem("token");
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("userProfile");
     setUserName("");
     setProfileOpen(false);
     navigate("/");

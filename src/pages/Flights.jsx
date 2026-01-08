@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FaPlane } from "react-icons/fa"
-import Hotelcard from '../component/Hotelcard'
 import Flightcard from '../component/Flightcard'
-import Busescard from '../component/Buscard'
-import Trainscard from '../component/Traincard'
+import { flights } from '../db/flights'
+import FlightList from "../component/Flightlist";
+import { useBooking } from "../context/BookingContext";
+import { useSearchParams } from "react-router-dom";
 
 const Flights = () => {
   const [tripType, setTripType] = useState("One Way");
@@ -13,6 +14,12 @@ const Flights = () => {
   const [to, setTo] = useState("");
   const [departure, setDeparture] = useState(null);
   const [returnDate, setReturnDate] = useState(null);
+  const [sortBy, setSortBy] = useState('cheapest');
+  const [searchFilters, setSearchFilters] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(5);
+  const { setSelectedFlight, setCurrentStep } = useBooking();
+  const [searchParamsUrl] = useSearchParams();
 
   const [open, setOpen] = useState(false);
   const [adults, setAdults] = useState(1);
@@ -20,10 +27,104 @@ const Flights = () => {
   const [infants, setInfants] = useState(0);
   const [travelClass, setTravelClass] = useState("Business");
 
+  const [fromSuggestions, setFromSuggestions] = useState([]);
+  const [toSuggestions, setToSuggestions] = useState([]);
+  const [showFromDropdown, setShowFromDropdown] = useState(false);
+  const [showToDropdown, setShowToDropdown] = useState(false);
+
+
   const videoPath = '/formbgvideo.mp4'
 
   const total = adults + children + infants;
   const displayTravellers = `${total} Traveller${total !== 1 ? 's' : ''}, ${travelClass}`;
+
+  const filteredFlights = useMemo(() => {
+    let list = [...flights]
+
+    if (searchFilters) {
+      const { from, to, date } = searchFilters;
+      list = list.filter((f) =>
+        (!from || f.from.toLowerCase().includes(from.toLowerCase())) &&
+        (!to || f.to.toLowerCase().includes(to.toLowerCase())) &&
+        (!date || f.date.includes(date))
+      );
+
+    }
+    if (sortBy === 'cheapest') {
+      list.sort((a, b) => a.price - b.price)
+    } else if (sortBy === 'earliest') {
+      list.sort((a, b) => a.departureTime.localeCompare(b.departureTime))
+    }
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    return list.slice(indexOfFirstItem, indexOfLastItem);
+  }, [searchFilters, sortBy, flights, currentPage, itemsPerPage])
+
+  const totalFilteredCount = useMemo(() => {
+    let list = [...flights];
+    if (searchFilters) {
+      const { from, to, date } = searchFilters;
+      list = list.filter((f) =>
+        (!from || f.from.toLowerCase().includes(from.toLowerCase())) &&
+        (!to || f.to.toLowerCase().includes(to.toLowerCase())) &&
+        (!date || f.date.includes(date))
+      );
+    }
+    if (sortBy === 'cheapest') list.sort((a, b) => a.price - b.price);
+    else if (sortBy === 'earliest') list.sort((a, b) => a.departureTime.localeCompare(b.departureTime));
+    return list.length;
+  }, [searchFilters, sortBy, flights]);
+
+  const handleBook = (flight) => {
+    const bookingData = {
+      ...flight,
+      totalPassengers: total,
+      travelClass: travelClass,
+      tripType,
+      from,
+      to,
+      departure: departure?.toDateString(),
+      searchDate: new Date().toISOString(),
+      bookingDate: new Date().toISOString().split('T')[0],
+      subtotal: flight.price * total,
+      returnDate: tripType === "Round Trip" && returnDate
+        ? returnDate.toDateString()
+        : null,
+    };
+
+    setSelectedFlight(bookingData);
+    setCurrentStep(2);
+  };
+
+  const handleSearch = () => {
+    setSearchFilters({
+      from,
+      to,
+      date: departure ? departure.toISOString().split('T')[0] : null,
+    });
+    setCurrentPage(1);
+  };
+
+  // Extract all unique cities from flights
+  const allCities = useMemo(() => {
+    const cities = new Set();
+    flights.forEach(f => {
+      cities.add(f.from);
+      cities.add(f.to);
+    });
+    return Array.from(cities).sort();
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = () => {
+      setShowFromDropdown(true);
+      setShowToDropdown(true);
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+
 
   return (
     <>
@@ -33,7 +134,7 @@ const Flights = () => {
           loop
           muted
           playsInline
-          className="absolute inset-0 w-full h-full object-fill -z-10 rounded-3xl"></video>
+          className="absolute inset-0 w-full h-full object-cover -z-10 rounded-3xl"></video>
         <h2 className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl lg:text-2xl font-bold mb-4 sm:mb-6">
           Search Your Flight
           <FaPlane className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 flex-shrink-0" />
@@ -68,27 +169,82 @@ const Flights = () => {
           </div>
 
           {/* From */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 relative">
             <label className="block text-xs sm:text-sm text-black font-bold mb-1.5 sm:mb-2">From</label>
             <input
               type="text"
               placeholder="From"
               value={from}
-              onChange={(e) => setFrom(e.target.value)}
-              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl border-2 border-gray-200 focus:border-blue-400 focus:outline-none bg-gray-50 text-sm h-12 sm:h-14 lg:h-16"
+              onChange={(e) => {
+                setFrom(e.target.value);
+                // Filter suggestions
+                const filtered = allCities.filter(city =>
+                  city.toLowerCase().includes(e.target.value.toLowerCase())
+                );
+                setFromSuggestions(filtered.slice(0, 6)); // Top 6
+                setShowFromDropdown(e.target.value.length > 0);
+              }}
+              onFocus={() => setShowFromDropdown(from.length > 0)}
+              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl border-2 border-gray-200 focus:border-blue-400 focus:outline-none bg-gray-50 placeholder:text-gray-500 font-semibold text-sm h-12 sm:h-14 lg:h-16"
             />
+
+            {/* Dropdown */}
+            {showFromDropdown && fromSuggestions.length > 0 && (
+              <div className="absolute top-full left-0 right-0 bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-200 mt-1 max-h-60 overflow-y-auto z-[1000]">
+                {fromSuggestions.map((city, idx) => (
+                  <div
+                    key={idx}
+                    onClick={() => {
+                      setFrom(city);
+                      setShowFromDropdown(false);
+                      setFromSuggestions([]);
+                    }}
+                    className="px-4 py-3 hover:bg-blue-50 cursor-pointer border-b border-gray-100 last:border-b-0 text-sm font-medium text-gray-800"
+                  >
+                    {city}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* To */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 relative">
             <label className="block text-xs sm:text-sm text-black font-bold mb-1.5 sm:mb-2">To</label>
             <input
               type="text"
               placeholder="To"
               value={to}
-              onChange={(e) => setTo(e.target.value)}
-              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl border-2 border-gray-200 focus:border-blue-400 focus:outline-none bg-gray-50 text-sm h-12 sm:h-14 lg:h-16"
+              onChange={(e) => {
+                setTo(e.target.value);
+                const filtered = allCities.filter(city =>
+                  city.toLowerCase().includes(e.target.value.toLowerCase())
+                );
+                setToSuggestions(filtered.slice(0, 6));
+                setShowToDropdown(e.target.value.length > 0);
+              }}
+              onFocus={() => setShowToDropdown(to.length > 0)}
+              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl border-2 border-gray-200 focus:border-blue-400 placeholder:text-gray-500 font-semibold focus:outline-none bg-gray-50 text-sm h-12 sm:h-14 lg:h-16"
             />
+
+            {/* Dropdown */}
+            {showToDropdown && toSuggestions.length > 0 && (
+              <div className="absolute top-full left-0 right-0 bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-200 mt-1 max-h-60 overflow-y-auto z-[1000]">
+                {toSuggestions.map((city, idx) => (
+                  <div
+                    key={idx}
+                    onClick={() => {
+                      setTo(city);
+                      setShowToDropdown(false);
+                      setToSuggestions([]);
+                    }}
+                    className="px-4 py-3 hover:bg-blue-50 cursor-pointer border-b border-gray-100 last:border-b-0 text-sm font-medium text-gray-800"
+                  >
+                    {city}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Departure */}
@@ -98,7 +254,7 @@ const Flights = () => {
               selected={departure}
               onChange={setDeparture}
               dateFormat="EEE, MMM d"
-              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl border-2 border-gray-200 focus:border-blue-400 focus:outline-none bg-gray-50 text-sm cursor-pointer text-left h-12 sm:h-14 lg:h-16"
+              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl border-2 border-gray-200 placeholder:text-gray-500 font-semibold focus:border-blue-400 focus:outline-none bg-gray-50 text-sm cursor-pointer text-left h-12 sm:h-14 lg:h-16"
               placeholderText="Select date"
               minDate={new Date()}
               popperClassName="z-[9999]"
@@ -113,8 +269,8 @@ const Flights = () => {
               selected={tripType === "Round Trip" ? returnDate : null}
               onChange={tripType === "Round Trip" ? setReturnDate : undefined}
               dateFormat="EEE, MMM d"
-              className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl border-2 text-sm cursor-pointer text-left h-12 sm:h-14 lg:h-16 ${tripType === "One Way"
-                ? "bg-gray-100 border-gray-300 text-gray-400 cursor-not-allowed"
+              className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl border-2 text-sm cursor-pointer placeholder:text-gray-500 font-semibold text-left h-12 sm:h-14 lg:h-16 ${tripType === "One Way"
+                ? "bg-gray-100 border-gray-300 text-gray-800 cursor-not-allowed"
                 : "border-gray-200 focus:border-blue-400 focus:outline-none bg-gray-50"
                 }`}
               placeholderText={tripType === "One Way" ? "Select Round Trip" : "Select date"}
@@ -212,18 +368,93 @@ const Flights = () => {
 
         {/* Search Button */}
         <div className="flex justify-center pt-4 sm:pt-6">
-          <button className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg bg-gradient-to-r from-orange-500 to-yellow-500 text-white py-3.5 sm:py-4 px-6 sm:px-8 rounded-2xl font-bold text-sm shadow-xl hover:from-orange-600 hover:to-orange-700 hover:-translate-y-0.5 hover:scale-[1.02] transition-all duration-200">
+          <button onClick={handleSearch} className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg bg-gradient-to-r bg-indigo-700 text-white border-indigo-400 py-3.5 sm:py-4 px-6 sm:px-8 rounded-2xl font-bold text-sm shadow-xl hover:from-indigo-600 hover:to-indigo-700 hover:-translate-y-0.5 hover:scale-[1.02] transition-all duration-200">
             Search Flights
           </button>
         </div>
       </div>
-<div className="z-0">
+      {/* Sort bar */}
+      <div className="relative max-w-8xl p-3 sm:p-4 lg:p-6 bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl mt-4 mb-6 mx-7">
+        <div className="mt-6 mb-3 flex flex-wrap justify-between items-center gap-3">
+          <p className="text-xs md:text-sm text-slate-500">
+            Showing {filteredFlights.length} flights
+            {searchFilters ? " for your search" : " (all available routes)"}
+          </p>
+          <div className="flex items-center gap-2 text-xs md:text-sm">
+            <span className="text-slate-500">Sort by:</span>
+            <button
+              className={`px-3 py-1 rounded-full border text-xs ${sortBy === "cheapest"
+                ? "bg-indigo-500 text-white border-indigo-400"
+                : "bg-slate-800 text-slate-300 border-slate-700"
+                }`}
+              onClick={() => {
+                setSortBy("cheapest")
+                setCurrentPage(1)
+              }}
+            >
+              Cheapest
+            </button>
+            <button
+              className={`px-3 py-1 rounded-full border text-xs ${sortBy === "earliest"
+                ? "bg-indigo-500 text-white border-indigo-400"
+                : "bg-slate-800 text-slate-300 border-slate-700"
+                }`}
+              onClick={() => {
+                setSortBy("earliest")
+                setCurrentPage(1)
+              }}
+            >
+              Earliest
+            </button>
+          </div>
+        </div>
+        {/* Flights list */}
+        < div className="space-y-4 pb-10" >
+          {
+            filteredFlights.length === 0 ? (
+              <div className="rounded-2xl bg-slate-900/60 border border-slate-700 px-4 py-8 text-center text-slate-300 text-sm">
+                No flights found for this search. Try changing date or route.
+              </div>
+            ) : (
+              filteredFlights.map((flight) => (
+                <FlightList
+                  key={flight.id}
+                  flight={flight}
+                  onBook={handleBook}
+                />
+              ))
+            )
+          }
+        </div >
+        {/* Pagination Controls */}
+        {filteredFlights.length > 0 && (
+          <div className="flex items-center justify-center gap-2 mt-6 pt-6 border-t border-slate-200">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="px-4 py-2 rounded-xl text-sm font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            >
+              Previous
+            </button>
 
-      <Flightcard />
-      <Hotelcard />
-      <Busescard />
-      <Trainscard />
-</div>
+            <span className="px-4 py-2 text-sm font-semibold text-slate-900 bg-white border rounded-xl shadow-sm">
+              Page {currentPage} of {Math.ceil(totalFilteredCount / itemsPerPage)}
+            </span>
+
+            <button
+              onClick={() => setCurrentPage(prev => prev + 1)}
+              disabled={currentPage * itemsPerPage >= totalFilteredCount}
+              className="px-4 py-2 rounded-xl text-sm font-semibold bg-orange-500 text-white hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md"
+            >
+              Next
+            </button>
+          </div>
+        )}
+
+      </div >
+      < div >
+        <Flightcard />
+      </div>
 
     </>
   );
