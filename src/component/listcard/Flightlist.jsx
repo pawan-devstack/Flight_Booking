@@ -1,4 +1,4 @@
-import { useBooking } from "../context/BookingContext";
+import { useBooking } from "../../context/BookingContext";
 
 const FlightList = ({ flight, onBook }) => {
   const { selectedFlight } = useBooking();

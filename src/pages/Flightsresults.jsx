@@ -1,7 +1,7 @@
 import { useSearchParams } from 'react-router-dom';
 import { useState, useMemo } from 'react';
 import { flights } from '../db/flights'; // ← Your data file
-import Flightcard from '../component/Flightcard';
+import Flightcard from '../component/detailscard/Flightcard';
 
 const FlightResults = () => {
   const [searchParams] = useSearchParams();

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaUser, FaSignInAlt, FaSearch, FaChevronDown, FaPhone, FaSignOutAlt } from 'react-icons/fa';
 import { NavLink, useNavigate } from 'react-router-dom';
-import ReactLogo from '../assets/airplane-flying-vector-icon.jpg';
+import ReactLogo from '../assets/airplane-logo.jpg';
 import FlightIcon from '../assets/Flight.webp';
 import HotelIcon from '../assets/Hotel.webp';
 import BusIcon from '../assets/Bus.webp';
@@ -113,7 +113,7 @@ const Navbar = () => {
 
                 {/* NAME DISPLAY */}
                 {userName ? (
-                  <span className="hidden md:block text-xs font-bold text-gray-900 bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text truncate max-w-[85px]">
+                  <span className="hidden md:block text-xs font-bold text-gray-900 bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text truncate max-w-21.25">
                     Hi {userName.split(' ')[0]}!
                   </span>
                 ) : (

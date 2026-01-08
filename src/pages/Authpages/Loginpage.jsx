@@ -1,8 +1,10 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext'
 
 const Loginpage = () => {
   const navigate = useNavigate()
+  const {login}= useAuth();
   const videoPath = '/bgvideo.mp4'
 
   const [formdata, setFormdata] = useState({

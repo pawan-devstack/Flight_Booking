@@ -2,7 +2,7 @@ import { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FaHotel } from "react-icons/fa"
-import Hotelcard from '../component/Hotelcard'
+import Hotelcard from '../component/detailscard/Hotelcard'
 
 const Hotels = () => {
   const [from, setFrom] = useState("");

@@ -2,10 +2,10 @@ import { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FaPlane } from "react-icons/fa"
-import Hotelcard from '../component/Hotelcard'
-import Flightcard from '../component/Flightcard'
-import Busescard from '../component/Buscard'
-import Trainscard from '../component/Traincard'
+import Hotelcard from '../component/detailscard/Hotelcard'
+import Flightcard from '../component/detailscard/Flightcard'
+import Busescard from '../component/detailscard/Buscard'
+import Trainscard from '../component/detailscard/Traincard'
 import { useSearchParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
