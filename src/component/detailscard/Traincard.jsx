@@ -144,7 +144,7 @@ const CheapestTrainsDeals = () => {
                             {filteredTrains.map((train) => (
                                 <div
                                     key={train.id}
-                                    className="min-w-[280px] max-w-[300px] flex-shrink-0 h-[340px] rounded-3xl overflow-hidden bg-white/90 backdrop-blur-xl border border-white/50 shadow-2xl hover:scale-[1.03] hover:shadow-3xl hover:-translate-y-2 transition-all duration-500 cursor-pointer snap-center group"
+                                    className="min-w-70 max-w-75 shrink-0 h-85 rounded-3xl overflow-hidden bg-white/90 backdrop-blur-xl border border-white/50 shadow-2xl hover:scale-[1.03] hover:shadow-3xl hover:-translate-y-2 transition-all duration-500 cursor-pointer snap-center group"
                                 >
                                     <div className="h-3/6 w-full relative overflow-hidden bg-gradient-to-br from-blue-100 to-indigo-100">
                                         <img

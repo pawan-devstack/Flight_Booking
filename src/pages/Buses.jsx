@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { FaPlane } from "react-icons/fa"
+import { FaBus, FaPlane } from "react-icons/fa"
 import { buses } from '../db/Buses'
 import { useBooking } from "../context/BookingContext";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -145,7 +145,7 @@ const Buses = () => {
   return (
     <>
       {/* Main Search Form */}
-      <div className="relative max-w-8xl p-3 sm:p-4 lg:p-6 bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl mt-4 mb-6 mx-7">
+      <div className="max-w-8xl p-3 sm:p-4 lg:p-6 bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl mt-4 mb-6 mx-7 z-50">
         <video src={videoPath} type='video/mp4' autoPlay
           loop
           muted
@@ -153,7 +153,7 @@ const Buses = () => {
           className="absolute inset-0 w-full h-full object-fill -z-10 rounded-3xl"></video>
         <h2 className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl lg:text-2xl font-bold mb-4 sm:mb-6">
           Search Your bus
-          <FaPlane className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 flex-shrink-0" />
+          <FaBus className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 flex-shrink-0" />
         </h2>
 
         {/* Grid Layout */}
@@ -295,13 +295,13 @@ const Buses = () => {
           {/* Travellers & Class */}
           <div className="lg:col-span-2 col-span-full md:col-auto">
             <label className="block text-xs sm:text-sm text-black font-bold mb-1.5 sm:mb-2">Travellers & Class</label>
-            <div className="relative w-full">
+            <div className="relative w-full z-50">
               <button
                 onClick={() => setOpen(!open)}
                 className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl border-2 border-orange-200 bg-gradient-to-r from-orange-50 to-yellow-50 text-sm font-semibold text-gray-800 flex items-center justify-between h-12 sm:h-14 lg:h-16 hover:shadow-md transition-all group"
               >
                 <span className="truncate max-w-[70%]">{displayTravellers}</span>
-                <svg className="w-4 h-4 flex-shrink-0 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 shrink-0 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
@@ -311,7 +311,7 @@ const Buses = () => {
                     scrollbarWidth: 'none',
                     msOverflowStyle: 'none',
                   }}
-                  className="absolute top-full left-0 right-0 sm:-left-4 md:-left-12 lg:-left-32 xl:-left-48 lg:left-auto lg:right-0 mt-3 w-full sm:w-96 lg:w-[380px] max-w-[95vw] bg-white/98 backdrop-blur-xl rounded-3xl shadow-2xl border p-4 sm:p-6 z-[9999] max-h-96 overflow-y-auto ">
+                  className="absolute top-full left-0 right-0 sm:-left-4 md:-left-12 lg:-left-32 xl:-left-48 lg:right-0 mt-3 w-full sm:w-96 lg:w-95 max-w-[95vw] bg-white/98 backdrop-blur-xl rounded-3xl shadow-2xl border p-4 sm:p-6 z-50 max-h-96 overflow-y-auto ">
                   <h3 className="font-semibold text-base sm:text-lg mb-4">Travellers & Class</h3>
                   {[
                     { label: "Adults", sub: "12 yrs or above", value: adults, set: setAdults },

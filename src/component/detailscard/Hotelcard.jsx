@@ -81,7 +81,7 @@ const BestHotelDeals = () => {
       <div className="max-w-7xl mx-auto relative">
         {/* Header */}
         <div className='flex justify-between items-center py-10'>
-          <h2 className="text-2xl font-bold text-gray-900 bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+          <h2 className="text-2xl font-bold text-gray-900 bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text">
             🏨 Best Hotel Deals ({filteredHotels.length})
           </h2>
           <div className="flex items-center gap-2 text-sm font-medium">
@@ -145,7 +145,7 @@ const BestHotelDeals = () => {
               {filteredHotels.map((hotel) => (
                 <div
                   key={hotel.id}
-                  className="min-w-[280px] max-w-[300px] flex-shrink-0 h-[340px] rounded-3xl overflow-hidden bg-white/90 backdrop-blur-xl border border-white/50 shadow-2xl hover:scale-[1.03] hover:shadow-3xl hover:-translate-y-2 transition-all duration-500 cursor-pointer snap-center group"
+                  className="min-w-70 max-w-75 shrink-0 h-85 rounded-3xl overflow-hidden bg-white/90 backdrop-blur-xl border border-white/50 shadow-2xl hover:scale-[1.03] hover:shadow-3xl hover:-translate-y-2 transition-all duration-500 cursor-pointer snap-center group"
                 >
                   <div className="h-3/6 w-full relative overflow-hidden bg-gray-100">
                     <img
