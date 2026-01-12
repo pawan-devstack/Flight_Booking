@@ -37,7 +37,7 @@ const Trains = () => {
   const [showFromDropdown, setShowFromDropdown] = useState(false);
   const [showToDropdown, setShowToDropdown] = useState(false);
 
-  const videoPath = "/trainvideo.mp4";
+  const videoPath = "/bgTrain.mp4";
 
   const total = adults + children + infants;
   const displayTravellers = `${total} Traveller${total !== 1 ? "s" : ""}, ${travelClass}`;
@@ -71,6 +71,7 @@ const Trains = () => {
       date: train.date,
       departureTime: train.departureTime,
       travelClass,
+      type:'train'
     };
 
     const existingBookings = JSON.parse(localStorage.getItem("bookings") || "[]");
@@ -166,7 +167,7 @@ const Trains = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-2 sm:gap-3 lg:gap-4 items-end mb-4 sm:mb-6 w-full min-h-[110px] sm:min-h-[130px] lg:min-h-[140px]">
           {/* Trip Type */}
           <div className="lg:col-span-2 col-span-full md:col-span-1">
-            <label className="block text-xs sm:text-sm text-gray-500 mb-1.5 sm:mb-2">
+            <label className="block text-xs sm:text-sm text-black font-bold mb-1.5 sm:mb-2">
               Trip Type
             </label>
             <div className="flex bg-gray-50 rounded-2xl p-0.5 sm:p-1 lg:p-2 border h-12 sm:h-14 lg:h-16">
@@ -193,7 +194,7 @@ const Trains = () => {
 
           {/* From */}
           <div className="lg:col-span-2 relative">
-            <label className="block text-xs sm:text-sm text-gray-500 mb-1.5 sm:mb-2">
+            <label className="block text-xs sm:text-sm text-black font-bold mb-1.5 sm:mb-2">
               From
             </label>
             <input
@@ -235,7 +236,7 @@ const Trains = () => {
 
           {/* To */}
           <div className="lg:col-span-2 relative">
-            <label className="block text-xs sm:text-sm text-gray-500 mb-1.5 sm:mb-2">
+            <label className="block text-xs sm:text-sm text-black font-bold mb-1.5 sm:mb-2">
               To
             </label>
             <input
@@ -277,7 +278,7 @@ const Trains = () => {
 
           {/* Departure */}
           <div className="lg:col-span-2">
-            <label className="block text-xs sm:text-sm text-gray-500 mb-1.5 sm:mb-2">
+            <label className="block text-xs sm:text-sm text-black font-bold mb-1.5 sm:mb-2">
               Departure
             </label>
             <DatePicker
@@ -293,16 +294,16 @@ const Trains = () => {
 
           {/* Return */}
           <div className="lg:col-span-2">
-            <label className="block text-xs sm:text-sm text-gray-500 mb-1.5 sm:mb-2">
+            <label className="block text-xs sm:text-sm text-black font-bold mb-1.5 sm:mb-2">
               Return
             </label>
             <DatePicker
               selected={tripType === "Round Trip" ? returnDate : null}
               onChange={tripType === "Round Trip" ? setReturnDate : undefined}
               dateFormat="EEE, MMM d"
-              className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl border-2 text-sm cursor-pointer text-left h-12 sm:h-14 lg:h-16 ${tripType === "One Way"
-                ? "bg-gray-100 border-gray-300 text-gray-400 cursor-not-allowed border-gray-200"
-                : "focus:border-blue-400 focus:outline-none bg-gray-50 placeholder:text-gray-500"
+              className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl border-2 text-sm cursor-pointer placeholder:text-gray-500 font-semibold text-left h-12 sm:h-14 lg:h-16 ${tripType === "One Way"
+                ? "bg-gray-100 border-gray-300 text-gray-800 cursor-not-allowed"
+                : "border-gray-200 focus:border-blue-400 focus:outline-none bg-gray-50"
                 }`}
               placeholderText={tripType === "One Way" ? "Select Round Trip" : "Select date"}
               minDate={departure}
@@ -313,7 +314,7 @@ const Trains = () => {
 
           {/* Travellers & Class */}
           <div className="lg:col-span-2 col-span-full md:col-auto">
-            <label className="block text-xs sm:text-sm text-gray-500 mb-1.5 sm:mb-2">
+            <label className="block text-xs sm:text-sm text-black font-bold mb-1.5 sm:mb-2">
               Travellers & Class
             </label>
 
@@ -335,7 +336,7 @@ const Trains = () => {
 
               {open && (
                 <div
-                  className="absolute top-full left-0 right-0 sm:left-4 md:left-12 lg:left-32 xl:left-48 lg:left-auto lg:right-0 mt-3 w-full sm:w-96 lg:w-[380px] max-w-[95vw] bg-white/98 backdrop-blur-xl rounded-3xl shadow-2xl border p-4 sm:p-6 z-[9999] max-h-96 overflow-y-auto"
+                  className="absolute top-full left-0 right-0 sm:left-4 md:left-12 lg:-left-32 xl:-left-48 lg:right-0 mt-3 w-full sm:w-96 lg:w-95 max-w-[95vw] bg-white/98 backdrop-blur-xl rounded-3xl shadow-2xl border p-4 sm:p-6 z-50 max-h-96 overflow-y-auto"
                   style={{ scrollbarWidth: "none" }}
                 >
                   <h3 className="font-semibold text-base sm:text-lg mb-4">Travellers & Class</h3>
@@ -404,7 +405,7 @@ const Trains = () => {
           <div className="flex justify-center pt-4 sm:pt-6 col-span-full">
             <button
               onClick={handleSearch}
-              className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg bg-gradient-to-r from-indigo-700 to-indigo-600 text-white border-indigo-400 py-3.5 sm:py-4 px-6 sm:px-8 rounded-2xl font-bold text-sm shadow-xl hover:from-indigo-600 hover:to-indigo-700 hover:-translate-y-0.5 hover:scale-[1.02] transition-all duration-200"
+              className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg text-black py-3.5 sm:py-4 px-6 sm:px-8 rounded-2xl font-semibold text-lg shadow-xl hover:-translate-y-0.5 hover:scale-[1.02] transition-all duration-200"
             >
               Search Trains
             </button>

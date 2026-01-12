@@ -1,15 +1,20 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FaPlane } from "react-icons/fa"
+import { useNavigate } from "react-router-dom";
+
 import Hotelcard from '../component/detailscard/Hotelcard'
 import Flightcard from '../component/detailscard/Flightcard'
 import Busescard from '../component/detailscard/Buscard'
 import Trainscard from '../component/detailscard/Traincard'
-import { useSearchParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+
+import { useBooking } from "../context/BookingContext";
 
 const Home = () => {
+  const navigate = useNavigate();
+  const { setTripType: setGlobalTripType } = useBooking();
+
   const [tripType, setTripType] = useState("One Way");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
@@ -17,25 +22,46 @@ const Home = () => {
   const [returnDate, setReturnDate] = useState(null);
 
   const [open, setOpen] = useState(false);
-  const [adults, setAdults] = useState(1);
-  const [children, setChildren] = useState(0);
-  const [infants, setInfants] = useState(0);
+  const [passengers, setPassengers] = useState({
+    adults:1,
+    children:0,
+    infants:0,
+  })
+
   const [travelClass, setTravelClass] = useState("Business");
-  const navigate = useNavigate();
 
   const videoPath = '/formbgvideo.mp4'
 
-  const total = adults + children + infants;
-  const displayTravellers = `${total} Traveller${total !== 1 ? 's' : ''}, ${travelClass}`;
+const totalTravellers = useMemo(
+  () => passengers.adults + passengers.children + passengers.infants,
+  [passengers]
+);
+
+const displayTravellers = useMemo(
+  () => `${totalTravellers} Traveller(s), ${travelClass}`,
+  [totalTravellers, travelClass]
+);
+
 
   const handleSearch = () => {
+    if(!from || !to || departure){
+      alert("Please fill all required fields");
+      return
+    }
+
+    setGlobalTripType(tripType)
+
   const searchParams = new URLSearchParams({
-    from: from || '',
-    to: to || '',
+    from,
+    to,
     tripType,
     travelClass,
-    total: total.toString(),
-    departure: departure?.toISOString()?.split('T')[0] || ''
+    travellers: totalTravellers.toString(),
+    departure: departure.toISOString()?.split('T')[0],
+    returnDate:
+    tripType === 'roundtrip' && returnDate
+    ? returnDate.toISOString().split('T')[0]
+    : '',
   });
   navigate(`/flightsresults?${searchParams.toString()}`);
 };
@@ -228,7 +254,7 @@ const Home = () => {
 
         {/* Search Button */}
         <div className="flex justify-center pt-4 sm:pt-6">
-          <button onClick={handleSearch} className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg bg-blue-600  text-white py-3.5 sm:py-4 px-6 sm:px-8 rounded-2xl font-bold text-sm shadow-xl hover:from-orange-600 hover:to-orange-700 hover:-translate-y-0.5 hover:scale-[1.02] transition-all duration-200">
+          <button onClick={handleSearch} className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg text-black py-3.5 sm:py-4 px-6 sm:px-8 rounded-2xl text-lg font-semibold shadow-xl hover:-translate-y-0.5 hover:scale-[1.02] transition-all duration-200">
             Search Flights
           </button>
         </div>

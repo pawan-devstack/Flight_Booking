@@ -1,17 +1,19 @@
-import React from 'react'
 import { Routes, Route } from 'react-router-dom'
+import Layout from './component/Layout'
+import Home from './pages/Home'
+import Flights from './pages/Flights'
+import Trains from './pages/Trains'
+import Hotels from './pages/Hotels'
+import Buses from './pages/Buses'
+import Customer from './pages/Customer'
+
 import Loginpage from './pages/Authpages/Loginpage'
 import Signuppage from './pages/Authpages/Signuppage'
-import Customer from './pages/Customer'
-import Layout from './component/Layout'
-import Flights from './pages/Flights'
-import Hotels from './pages/Hotels'
-import Trains from './pages/Trains'
-import Buses from './pages/Buses'
-import Home from './pages/Home'
 import ProfilePage from './pages/Authpages/Profilepage'
-import FlightResults from './pages/Flightsresults'
+import FlightResults from './pages/Authpages/Flightsresults'
 import MyTripsPage from './pages/Authpages/MyTripsPage'
+
+import ProtectedRoute from './component/Protectedroute'
 
 const App = () => {
   return (
@@ -27,8 +29,18 @@ const App = () => {
       </Route>
       <Route path="/login" element={<Loginpage />} />
       <Route path="/signup" element={<Signuppage />} />
-      <Route path="/profile" element={<ProfilePage />} />
-      <Route path="/bookings" element={<MyTripsPage />} />
+
+      <Route path="/profile" element={
+        <ProtectedRoute>
+          <ProfilePage />
+        </ProtectedRoute>
+      }
+      />
+      <Route path="/bookings" element={
+        <ProtectedRoute>
+          <MyTripsPage />
+        </ProtectedRoute>
+      } />
     </Routes>
   )
 }

@@ -15,16 +15,23 @@ const Hotels = () => {
   const [infants, setInfants] = useState(0);
   const [rooms, setrooms] = useState("Delux");
 
+  const videoPath = '/hotelbg.mp4'
+
   const total = adults + children + infants;
   const displayPerson = `${total} Person${total !== 1 ? 's' : ''}, ${rooms}`;
 
   return (
     <>
       {/* Main Search Form */}
-      <div className="max-w-8xl p-3 sm:p-4 lg:p-6 bg-white rounded-3xl shadow-2xl mt-4 mb-6 mx-7">
+      <div className="max-w-8xl p-3 sm:p-4 lg:p-6 bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl mt-4 mb-6 mx-7">
+        <video src={videoPath} type="video/mp4" autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover object-center -z-10 rounded-3xl"></video>
         <h2 className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl lg:text-2xl font-bold mb-4 sm:mb-6">
           Search Your Hotel
-          <FaHotel className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 flex-shrink-0" />
+          <FaHotel className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 shrink-0" />
         </h2>
 
         {/* Grid Layout */}
@@ -32,7 +39,7 @@ const Hotels = () => {
 
           {/* From */}
           <div className="lg:col-span-2">
-            <label className="block text-xs sm:text-sm text-gray-500 mb-1.5 sm:mb-2">City</label>
+            <label className="block text-xs sm:text-sm text-black font-bold mb-1.5 sm:mb-2">City</label>
             <input
               type="text"
               placeholder="City & Hotel"
@@ -44,7 +51,7 @@ const Hotels = () => {
 
           {/* Departure */}
           <div className="lg:col-span-2">
-            <label className="block text-xs sm:text-sm text-gray-500 mb-1.5 sm:mb-2">CheckIn</label>
+            <label className="block text-xs sm:text-sm text-black font-bold mb-1.5 sm:mb-2">CheckIn</label>
             <DatePicker
               selected={checkin}
               onChange={setcheckin}
@@ -58,12 +65,12 @@ const Hotels = () => {
 
           {/* Return */}
           <div className="lg:col-span-2">
-            <label className="block text-xs sm:text-sm text-gray-500 mb-1.5 sm:mb-2">CheckOut</label>
+            <label className="block text-xs sm:text-sm text-black font-bold mb-1.5 sm:mb-2">CheckOut</label>
             <DatePicker
               selected={checkout}
               onChange={setcheckout}
               dateFormat="EEE, MMM d"
-              className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl border-2 text-sm cursor-pointer text-left h-12 sm:h-14 lg:h-16`}
+              className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl border-2 border-gray-200 focus:border-blue-400 focus:outline-none bg-gray-50 text-sm cursor-pointer placeholder:text-gray-500 font-semibold text-left h-12 sm:h-14 lg:h-16`}
               placeholderText={"Select date"}
               minDate={checkin}
             />
@@ -71,7 +78,7 @@ const Hotels = () => {
 
           {/* Travellers & Class */}
           <div className="lg:col-span-2 col-span-full md:col-auto">
-            <label className="block text-xs sm:text-sm text-gray-500 mb-1.5 sm:mb-2">Person & Room</label>
+            <label className="block text-xs sm:text-sm text-black font-bold mb-1.5 sm:mb-2">Person & Room</label>
             <div className="relative w-full">
               <button
                 onClick={() => setOpen(!open)}
@@ -155,7 +162,7 @@ const Hotels = () => {
 
           {/* Search Button */}
           <div className=" sm:pt-6 lg:col-span-3">
-            <button className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg bg-gradient-to-r from-orange-500 to-yellow-500 text-white py-3 sm:py-5 px-6 sm:px-8 rounded-2xl font-bold text-sm shadow-xl hover:from-orange-600 hover:to-orange-700 hover:-translate-y-0.5 hover:scale-[1.02] transition-all duration-200">
+            <button className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg text-black py-3 sm:py-5 px-6 sm:px-8 rounded-2xl font-bold text-lg shadow-xl hover:-translate-y-0.5 hover:scale-[1.02] transition-all duration-200">
               Search Hotels
             </button>
           </div>

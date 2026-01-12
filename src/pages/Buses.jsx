@@ -96,7 +96,8 @@ const Buses = () => {
       paymentMethod: "Credit Card",
       busId: bus.id,
       date: bus.date,
-      departureTime: bus.departureTime
+      departureTime: bus.departureTime,
+      type:'bus'
     };
 
     const existingBookings = JSON.parse(localStorage.getItem("bookings") || "[]");

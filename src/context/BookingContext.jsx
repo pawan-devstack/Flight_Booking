@@ -1,24 +1,73 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useReducer, useMemo } from "react";
 
 const BookingContext = createContext(null);
 
+const initialState = {
+  selectedFlight: null,
+  passengers: 1,
+  tripType: "oneway", // oneway | roundtrip
+  currentStep: 1,     // 1: Search, 2: Payment, 3: Success
+  lastBooking: null,
+};
+
+function bookingReducer(state, action) {
+  switch (action.type) {
+    case "SELECT_FLIGHT":
+      return { ...state, selectedFlight: action.payload };
+
+    case "SET_PASSENGERS":
+      return { ...state, passengers: action.payload };
+
+    case "SET_TRIP_TYPE":
+      return { ...state, tripType: action.payload };
+
+    case "SET_STEP":
+      return { ...state, currentStep: action.payload };
+
+    case "SET_LAST_BOOKING":
+      return { ...state, lastBooking: action.payload };
+
+    case "RESET_BOOKING":
+      return { ...initialState };
+
+    default:
+      return state;
+  }
+}
+
 export const BookingProvider = ({ children }) => {
-  const [selectedFlight, setSelectedFlight] = useState(null);
-  const [passengers, setPassengers] = useState(1);
-  const [tripType, setTripType] = useState("oneway"); // "oneway" | "roundtrip"
-  const [currentStep, setCurrentStep] = useState(1);  // 1: Search, 2: Payment, 3: Success
+  const [state, dispatch] = useReducer(bookingReducer, initialState);
 
-  const [lastBooking, setLastBooking] = useState(null);
-
+  /* Restore last booking on refresh */
   useEffect(() => {
     const saved = localStorage.getItem("last_booking");
     if (saved) {
-      setLastBooking(JSON.parse(saved));
+      dispatch({
+        type: "SET_LAST_BOOKING",
+        payload: JSON.parse(saved),
+      });
     }
   }, []);
 
+  const selectFlight = (flight) => {
+    dispatch({ type: "SELECT_FLIGHT", payload: flight });
+  };
+
+  const setPassengers = (count) => {
+    dispatch({ type: "SET_PASSENGERS", payload: count });
+  };
+
+  const setTripType = (type) => {
+    dispatch({ type: "SET_TRIP_TYPE", payload: type });
+  };
+
+  const setStep = (step) => {
+    dispatch({ type: "SET_STEP", payload: step });
+  };
+
   const saveBooking = (booking) => {
-    setLastBooking(booking);
+    dispatch({ type: "SET_LAST_BOOKING", payload: booking });
+
     localStorage.setItem("last_booking", JSON.stringify(booking));
 
     const all = JSON.parse(localStorage.getItem("bookings") || "[]");
@@ -27,25 +76,26 @@ export const BookingProvider = ({ children }) => {
   };
 
   const resetBookingFlow = () => {
-    setSelectedFlight(null);
-    setPassengers(1);
-    setTripType("oneway");
-    setCurrentStep(1);
+    dispatch({ type: "RESET_BOOKING" });
   };
 
-  const value = {
-    selectedFlight,
-    setSelectedFlight,
-    passengers,
-    setPassengers,
-    tripType,
-    setTripType,
-    currentStep,
-    setCurrentStep,
-    lastBooking,
-    saveBooking,
-    resetBookingFlow,
-  };
+  const value = useMemo(
+    () => ({
+      selectedFlight: state.selectedFlight,
+      passengers: state.passengers,
+      tripType: state.tripType,
+      currentStep: state.currentStep,
+      lastBooking: state.lastBooking,
+
+      selectFlight,
+      setPassengers,
+      setTripType,
+      setStep,
+      saveBooking,
+      resetBookingFlow,
+    }),
+    [state]
+  );
 
   return (
     <BookingContext.Provider value={value}>

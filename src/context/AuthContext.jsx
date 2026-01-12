@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState, useMemo } from "react";
 
 const AuthContext = createContext(null);
 
@@ -9,9 +9,9 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Restore user on refresh
   useEffect(() => {
     try {
-      // support old keys too (currentUser/userdata) so login mismatch solve हो जाए
       const saved =
         localStorage.getItem(AUTH_USER_KEY) ||
         localStorage.getItem("currentUser") ||
@@ -19,7 +19,6 @@ export const AuthProvider = ({ children }) => {
 
       if (saved) {
         const parsed = JSON.parse(saved);
-        // normalize minimal public user
         const publicUser = {
           id: parsed.id ?? parsed._id ?? parsed.userId ?? Date.now(),
           name: parsed.name ?? "",
@@ -78,7 +77,12 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem(AUTH_USER_KEY);
   };
 
-  const value = { user, loading, signup, login, logout };
+const value = useMemo(
+  () => ({ user, loading, isAuthenticated: !!user, signup, login, logout,
+ }),
+  [user, loading]
+);
+
 
   return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;
 };

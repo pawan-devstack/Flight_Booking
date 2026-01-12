@@ -96,7 +96,8 @@ const Flights = () => {
       paymentMethod: "Credit Card",
       flightId: flight.id,
       date: flight.date,
-      departureTime: flight.departureTime
+      departureTime: flight.departureTime,
+      type:'flight'
     };
 
     const existingBookings = JSON.parse(localStorage.getItem("bookings") || "[]");
@@ -373,7 +374,7 @@ const Flights = () => {
 
         {/* Search Button */}
         <div className="flex justify-center pt-4 sm:pt-6">
-          <button onClick={handleSearch} className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg bg-gradient-to-r bg-indigo-700 text-white border-indigo-400 py-3.5 sm:py-4 px-6 sm:px-8 rounded-2xl font-bold text-sm shadow-xl hover:from-indigo-600 hover:to-indigo-700 hover:-translate-y-0.5 hover:scale-[1.02] transition-all duration-200">
+          <button onClick={handleSearch} className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg text-black py-3.5 sm:py-4 px-6 sm:px-8 rounded-2xl font-semibold text-lg shadow-xl hover:-translate-y-0.5 hover:scale-[1.02] transition-all duration-200">
             Search Flights
           </button>
         </div>
