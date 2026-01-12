@@ -7,7 +7,7 @@ import { useAuth } from "../context/AuthContext";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import Buslist from "../component/listcard/Buslist";
-import Buscard from '../component/detailscard/buscard'
+import Buscard from '../component/detailscard/Buscard'
 import SortBar from "../component/Sortbar";
 
 const Buses = () => {
