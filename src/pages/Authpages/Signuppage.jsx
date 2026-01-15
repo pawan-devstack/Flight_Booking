@@ -1,70 +1,62 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 const Signuppage = () => {
-  const navigate = useNavigate()
-  const videoPath = '/bgvideo.mp4'
+  const navigate = useNavigate();
+  const { signup } = useAuth();
+  const videoPath = "/bgvideo.mp4";
 
   const [formdata, setFormdata] = useState({
-    name: '',
-    lastname: '',
-    email: '',
-    gender: '',
-    password: '',
-    confirmPassword: '',
-  })
+    name: "",
+    lastname: "",
+    email: "",
+    gender: "",
+    password: "",
+    confirmPassword: "",
+  });
 
   const [passwordChecks, setPasswordChecks] = useState({
     hasUpper: false,
     hasLower: false,
     hasNumber: false,
     hasSpecial: false,
-    minLength: false
+    minLength: false,
   });
 
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [error, seterror] = useState({})
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, seterror] = useState({});
 
   const handlechange = (e) => {
-    const { name, value } = e.target
-    setFormdata({ ...formdata, [name]: value })
+    const { name, value } = e.target;
+    setFormdata({ ...formdata, [name]: value });
 
     if (error[name]) {
-      const newError = { ...error }
-      delete newError[name]
-      seterror(newError)
+      const newError = { ...error };
+      delete newError[name];
+      seterror(newError);
     }
-    if (name === 'password') {
+
+    if (name === "password") {
       setPasswordChecks({
         hasUpper: /[A-Z]/.test(value),
         hasLower: /[a-z]/.test(value),
         hasNumber: /[0-9]/.test(value),
         hasSpecial: /[!@#$%^&*(),.?":{}|<>]/.test(value),
         minLength: value.length >= 8,
-      })
+      });
     }
-  }
+  };
 
-  const handlesubmit = (e) => {
-    e.preventDefault()
-    const newerror = {}
+  const handlesubmit = async (e) => {
+    e.preventDefault();
 
-    // Tumhare existing validations...
-    if (!formdata.name) newerror.name = 'First name is required'
-    if (!formdata.lastname) newerror.lastname = 'Last name is required'
-    if (!formdata.email) newerror.email = 'Email is required'
-    if (!formdata.gender) newerror.gender = 'Gender is required'
-    if (!formdata.password) newerror.password = 'Password is required'
-    if (!formdata.confirmPassword) newerror.confirmPassword = 'Confirm password is required'
-    if (
-      formdata.password &&
-      formdata.confirmPassword &&
-      formdata.password !== formdata.confirmPassword
-    ) {
-      newerror.confirmPassword = 'Passwords do not match'
+    // ✅ validations
+    if (formdata.password !== formdata.confirmPassword) {
+      seterror({ confirmPassword: "Passwords do not match" });
+      return;
     }
 
-    // ✅ NEW: Password strength check
     const isStrong =
       passwordChecks.hasUpper &&
       passwordChecks.hasLower &&
@@ -73,28 +65,30 @@ const Signuppage = () => {
       passwordChecks.minLength;
 
     if (!isStrong) {
-      newerror.password = 'Password must contain: Uppercase, Lowercase, Number, Special char & min 8 chars';
+      seterror({
+        password:
+          "Password must include Uppercase, Lowercase, Number, Special char & min 8 characters",
+      });
+      return;
     }
 
-    if (Object.keys(newerror).length > 0) {
-      seterror(newerror)
-      return
+    try {
+      setIsSubmitting(true);
+
+      await signup({
+        name: `${formdata.name} ${formdata.lastname}`,
+        email: formdata.email,
+        password: formdata.password,
+      });
+
+      alert("✅ Signup successful");
+      navigate("/login");
+    } catch (err) {
+      seterror({ email: err.message });
+    } finally {
+      setIsSubmitting(false);
     }
-
-    setIsSubmitting(true)
-    const userdata = { ...formdata }
-    delete userdata.confirmPassword
-
-    let allUsers = JSON.parse(localStorage.getItem('users')) || [];
-    allUsers.push(userdata);
-    localStorage.setItem('users', JSON.stringify(allUsers));
-    localStorage.setItem('userdata', JSON.stringify(userdata));
-
-    alert(`✅ Signup Successful! Welcome, ${formdata.name} ${formdata.lastname}`)
-    setIsSubmitting(false)
-    navigate('/login')
   }
-
   const handleLogin = () => {
     navigate('/')
   }

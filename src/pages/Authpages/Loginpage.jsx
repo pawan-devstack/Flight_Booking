@@ -22,35 +22,25 @@ const Loginpage = () => {
     if (error) seterror('')
   }
 
-  const handlesubmit = (e) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+  const handlesubmit = async (e) => {
+  e.preventDefault()
+  setIsSubmitting(true)
 
-    const savedUser = localStorage.getItem('users')
+  try {
+    await login({
+      email: formdata.email,
+      password: formdata.password
+    })
 
-    if (!savedUser) {
-      seterror('No account found! Please signup first.')
-      setIsSubmitting(false)
-      return
-    }
-
-    const allUsers = JSON.parse(localStorage.getItem('users')) || []
-    const userData = allUsers.find(
-      (user) => user.email === formdata.email && user.password === formdata.password)
-
-    if (userData) {
-      localStorage.setItem('isLoggedIn', 'true')
-      localStorage.setItem('currentUser', JSON.stringify(userData))
-      localStorage.setItem('userdata', JSON.stringify(userData))
-
-      alert(`✅ Welcome back, ${userData.name} ${userData.lastname}!`)
-      setIsSubmitting(false)
-      navigate('/')
-    } else {
-      seterror('❌ Invalid email or password!')
-      setIsSubmitting(false)
-    }
+    alert("✅ Login Successful")
+    navigate('/flights')   // booking wali screen
+  } catch (err) {
+    seterror(err.message)
+  } finally {
+    setIsSubmitting(false)
   }
+}
+
 
   const handleLogin = () => {
     navigate('/')
