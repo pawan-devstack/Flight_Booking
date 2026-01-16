@@ -1,88 +1,88 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react"
 import { FaTrain, FaPlane } from "react-icons/fa"
-import { trains } from '../db/trains'
-import { useBooking } from "../context/BookingContext";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import "react-datepicker/dist/react-datepicker.css";
-import DatePicker from "react-datepicker";
-import Trainlist from "../component/listcard/Trainlist";
+import { trains } from '../db/Trains'
+import { useBooking } from "../context/BookingContext"
+import { useNavigate, useSearchParams } from "react-router-dom"
+import { useAuth } from "../context/AuthContext"
+import "react-datepicker/dist/react-datepicker.css"
+import DatePicker from "react-datepicker"
+import Trainlist from "../component/listcard/Trainlist"
 import Traincard from '../component/detailscard/Traincard'
-import SortBar from "../component/Sortbar";
+import SortBar from "../component/Sortbar"
 
 const Trains = () => {
-  const [tripType, setTripType] = useState("One Way");
-  const [from, setFrom] = useState("");
-  const [to, setTo] = useState("");
-  const [departure, setDeparture] = useState(null);
-  const [returnDate, setReturnDate] = useState(null);
-  const [sortBy, setSortBy] = useState('cheapest');
-  const [searchFilters, setSearchFilters] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(5);
+  const [tripType, setTripType] = useState("One Way")
+  const [from, setFrom] = useState("")
+  const [to, setTo] = useState("")
+  const [departure, setDeparture] = useState(null)
+  const [returnDate, setReturnDate] = useState(null)
+  const [sortBy, setSortBy] = useState('cheapest')
+  const [searchFilters, setSearchFilters] = useState(null)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage] = useState(5)
 
-  const { user } = useAuth();
-  const { setSelectedTrain, setCurrentStep } = useBooking();
-  const [searchParamsUrl] = useSearchParams();
-  const navigate = useNavigate();
+  const { user } = useAuth()
+  const { setSelectedTrain, setCurrentStep } = useBooking()
+  const [searchParamsUrl] = useSearchParams()
+  const navigate = useNavigate()
 
-  const [open, setOpen] = useState(false);
-  const [adults, setAdults] = useState(1);
-  const [children, setChildren] = useState(0);
-  const [infants, setInfants] = useState(0);
-  const [travelClass, setTravelClass] = useState("Sleeper");
+  const [open, setOpen] = useState(false)
+  const [adults, setAdults] = useState(1)
+  const [children, setChildren] = useState(0)
+  const [infants, setInfants] = useState(0)
+  const [travelClass, setTravelClass] = useState("Sleeper")
 
-  const [fromSuggestions, setFromSuggestions] = useState([]);
-  const [toSuggestions, setToSuggestions] = useState([]);
-  const [showFromDropdown, setShowFromDropdown] = useState(false);
-  const [showToDropdown, setShowToDropdown] = useState(false);
+  const [fromSuggestions, setFromSuggestions] = useState([])
+  const [toSuggestions, setToSuggestions] = useState([])
+  const [showFromDropdown, setShowFromDropdown] = useState(false)
+  const [showToDropdown, setShowToDropdown] = useState(false)
 
   const videoPath = '/bgTrain.mp4'
 
-  const total = adults + children + infants;
-  const displayTravellers = `${total} Traveller${total !== 1 ? 's' : ''}, ${travelClass}`;
+  const total = adults + children + infants
+  const displayTravellers = `${total} Traveller${total !== 1 ? 's' : ''}, ${travelClass}`
 
   const filteredtrains = useMemo(() => {
     let list = [...trains]
 
     if (searchFilters) {
-      const { from, to, date } = searchFilters;
+      const { from, to, date } = searchFilters
       list = list.filter((f) =>
         (!from || f.from.toLowerCase().includes(from.toLowerCase())) &&
         (!to || f.to.toLowerCase().includes(to.toLowerCase())) &&
         (!date || f.date.includes(date))
-      );
+      )
     }
     if (sortBy === 'cheapest') {
       list.sort((a, b) => a.price - b.price)
     } else if (sortBy === 'earliest') {
       list.sort((a, b) => a.departureTime.localeCompare(b.departureTime))
     }
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    return list.slice(indexOfFirstItem, indexOfLastItem);
+    const indexOfLastItem = currentPage * itemsPerPage
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage
+    return list.slice(indexOfFirstItem, indexOfLastItem)
   }, [searchFilters, sortBy, trains, currentPage, itemsPerPage])
 
   const totalFilteredCount = useMemo(() => {
-    let list = [...trains];
+    let list = [...trains]
     if (searchFilters) {
-      const { from, to, date } = searchFilters;
+      const { from, to, date } = searchFilters
       list = list.filter((f) =>
         (!from || f.from.toLowerCase().includes(from.toLowerCase())) &&
         (!to || f.to.toLowerCase().includes(to.toLowerCase())) &&
         (!date || f.date.includes(date))
-      );
+      )
     }
-    if (sortBy === 'cheapest') list.sort((a, b) => a.price - b.price);
-    else if (sortBy === 'earliest') list.sort((a, b) => a.departureTime.localeCompare(b.departureTime));
-    return list.length;
-  }, [searchFilters, sortBy, trains]);
+    if (sortBy === 'cheapest') list.sort((a, b) => a.price - b.price)
+    else if (sortBy === 'earliest') list.sort((a, b) => a.departureTime.localeCompare(b.departureTime))
+    return list.length
+  }, [searchFilters, sortBy, trains])
 
   const handleBook = (Train) => {
     if (!user) {
-      alert("Please login first to book a Train!");
-      navigate('/login');
-      return;
+      alert("Please login first to book a Train!")
+      navigate('/login')
+      return
     }
 
     const newBooking = {
@@ -98,50 +98,50 @@ const Trains = () => {
       date: Train.date,
       departureTime: Train.departureTime,
       type: 'train'
-    };
+    }
 
-    const existingBookings = JSON.parse(localStorage.getItem("bookings") || "[]");
-    const updatedBookings = [...existingBookings, newBooking];
-    localStorage.setItem("bookings", JSON.stringify(updatedBookings));
+    const existingBookings = JSON.parse(localStorage.getItem("bookings") || "[]")
+    const updatedBookings = [...existingBookings, newBooking]
+    localStorage.setItem("bookings", JSON.stringify(updatedBookings))
 
     setSelectedTrain({
       ...Train,
       ...newBooking
-    });
+    })
 
     if (confirm("Booking Successful! Go to My Trips?")) {
-      navigate('/bookings');
+      navigate('/bookings')
     } else {
-      setCurrentStep(2);
+      setCurrentStep(2)
     }
-  };
+  }
 
   const handleSearch = () => {
     setSearchFilters({
       from,
       to,
       date: departure ? departure.toISOString().split('T')[0] : null,
-    });
-    setCurrentPage(1);
-  };
+    })
+    setCurrentPage(1)
+  }
 
   const allCities = useMemo(() => {
-    const cities = new Set();
+    const cities = new Set()
     trains.forEach(f => {
-      cities.add(f.from);
-      cities.add(f.to);
-    });
-    return Array.from(cities).sort();
-  }, []);
+      cities.add(f.from)
+      cities.add(f.to)
+    })
+    return Array.from(cities).sort()
+  }, [])
 
   useEffect(() => {
     const handleClickOutside = () => {
-      setShowFromDropdown(true);
-      setShowToDropdown(true);
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+      setShowFromDropdown(true)
+      setShowToDropdown(true)
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   return (
     <>
@@ -193,12 +193,12 @@ const Trains = () => {
               placeholder="From"
               value={from}
               onChange={(e) => {
-                setFrom(e.target.value);
+                setFrom(e.target.value)
                 const filtered = allCities.filter(city =>
                   city.toLowerCase().includes(e.target.value.toLowerCase())
-                );
-                setFromSuggestions(filtered.slice(0, 6));
-                setShowFromDropdown(e.target.value.length > 0);
+                )
+                setFromSuggestions(filtered.slice(0, 6))
+                setShowFromDropdown(e.target.value.length > 0)
               }}
               onFocus={() => setShowFromDropdown(from.length > 0)}
               className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl border-2 border-gray-200 focus:border-blue-400 focus:outline-none bg-gray-50 placeholder:text-gray-500 font-semibold text-sm h-12 sm:h-14 lg:h-16"
@@ -209,9 +209,9 @@ const Trains = () => {
                   <div
                     key={idx}
                     onClick={() => {
-                      setFrom(city);
-                      setShowFromDropdown(false);
-                      setFromSuggestions([]);
+                      setFrom(city)
+                      setShowFromDropdown(false)
+                      setFromSuggestions([])
                     }}
                     className="px-4 py-3 hover:bg-blue-50 cursor-pointer border-b border-gray-100 last:border-b-0 text-sm font-medium text-gray-800"
                   >
@@ -230,12 +230,12 @@ const Trains = () => {
               placeholder="To"
               value={to}
               onChange={(e) => {
-                setTo(e.target.value);
+                setTo(e.target.value)
                 const filtered = allCities.filter(city =>
                   city.toLowerCase().includes(e.target.value.toLowerCase())
-                );
-                setToSuggestions(filtered.slice(0, 6));
-                setShowToDropdown(e.target.value.length > 0);
+                )
+                setToSuggestions(filtered.slice(0, 6))
+                setShowToDropdown(e.target.value.length > 0)
               }}
               onFocus={() => setShowToDropdown(to.length > 0)}
               className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl border-2 border-gray-200 focus:border-blue-400 placeholder:text-gray-500 font-semibold focus:outline-none bg-gray-50 text-sm h-12 sm:h-14 lg:h-16"
@@ -246,9 +246,9 @@ const Trains = () => {
                   <div
                     key={idx}
                     onClick={() => {
-                      setTo(city);
-                      setShowToDropdown(false);
-                      setToSuggestions([]);
+                      setTo(city)
+                      setShowToDropdown(false)
+                      setToSuggestions([])
                     }}
                     className="px-4 py-3 hover:bg-blue-50 cursor-pointer border-b border-gray-100 last:border-b-0 text-sm font-medium text-gray-800"
                   >
@@ -385,17 +385,17 @@ const Trains = () => {
         searchFilters={searchFilters}
         sortBy={sortBy}
         onSortChange={(newSort) => {
-          setSortBy(newSort);
-          setCurrentPage(1);
+          setSortBy(newSort)
+          setCurrentPage(1)
         }}
         totalFilteredCount={totalFilteredCount}
         currentPage={currentPage}
         itemsPerPage={itemsPerPage}
         onPageChange={(direction) => {
           if (direction === 'prev') {
-            setCurrentPage(prev => Math.max(prev - 1, 1));
+            setCurrentPage(prev => Math.max(prev - 1, 1))
           } else {
-            setCurrentPage(prev => prev + 1);
+            setCurrentPage(prev => prev + 1)
           }
         }}
       >
@@ -418,7 +418,7 @@ const Trains = () => {
         <Traincard />
       </div>
     </>
-  );
-};
+  )
+}
 
-export default Trains;
+export default Trains
