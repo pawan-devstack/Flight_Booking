@@ -1,76 +1,64 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { FaPlane } from "react-icons/fa"
+import { FaPlane } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-
-import Hotelcard from '../component/detailscard/Hotelcard'
-import Flightcard from '../component/detailscard/Flightcard'
-import Busescard from '../component/detailscard/Buscard'
-import Trainscard from '../component/detailscard/Traincard'
-
 import { useBooking } from "../context/BookingContext";
+
+import Hotelcard from '../component/detailscard/Hotelcard';
+import Flightcard from '../component/detailscard/Flightcard';
+import Busescard from '../component/detailscard/Buscard';
+import Trainscard from '../component/detailscard/Traincard';
+
+const videoPath = '/formbgvideo.mp4'
 
 const Home = () => {
   const navigate = useNavigate();
   const { setTripType: setGlobalTripType } = useBooking();
 
-  const [tripType, setTripType] = useState("One Way");
+  const [tripType, setTripType] = useState("oneway");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [departure, setDeparture] = useState(null);
   const [returnDate, setReturnDate] = useState(null);
 
   const [open, setOpen] = useState(false);
-  const [passengers, setPassengers] = useState({
-    adults:1,
-    children:0,
-    infants:0,
-  })
-
+  const [adults, setAdults] = useState(1);
+  const [children, setChildren] = useState(0);
+  const [infants, setInfants] = useState(0);
   const [travelClass, setTravelClass] = useState("Business");
 
-  const videoPath = '/formbgvideo.mp4'
-
-const totalTravellers = useMemo(
-  () => passengers.adults + passengers.children + passengers.infants,
-  [passengers]
-);
-
-const displayTravellers = useMemo(
-  () => `${totalTravellers} Traveller(s), ${travelClass}`,
-  [totalTravellers, travelClass]
-);
-
+  const totalTravellers = adults + children + infants;
+  const displayTravellers = `${totalTravellers} Travellers, ${travelClass}`;
 
   const handleSearch = () => {
-    if(!from || !to || departure){
+    if (!from || !to || !departure) {
       alert("Please fill all required fields");
-      return
+      return;
     }
 
-    setGlobalTripType(tripType)
+    setGlobalTripType(tripType);
 
-  const searchParams = new URLSearchParams({
-    from,
-    to,
-    tripType,
-    travelClass,
-    travellers: totalTravellers.toString(),
-    departure: departure.toISOString()?.split('T')[0],
-    returnDate:
-    tripType === 'roundtrip' && returnDate
-    ? returnDate.toISOString().split('T')[0]
-    : '',
-  });
-  navigate(`/flightsresults?${searchParams.toString()}`);
-};
+    const searchParams = new URLSearchParams({
+      from,
+      to,
+      tripType,
+      travelClass,
+      travellers: totalTravellers.toString(),
+      departure: departure.toISOString().split('T')[0],
+      returnDate:
+        tripType === 'roundtrip' && returnDate
+          ? returnDate.toISOString().split('T')[0]
+          : '',
+    });
 
+    navigate(`/flightsresults?${searchParams.toString()}`);
+  };
 
   return (
     <>
       {/* Main Search Form */}
-      <div className="relative max-w-8xl p-3 sm:p-4 lg:p-6 bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl mt-4 mb-6 mx-7">
+      <div className="relative max-w-8xl overflow-visible p-3 sm:p-4 lg:p-6 bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl mt-4 mb-6 mx-7">
         <video src={videoPath} type='video/mp4' autoPlay
           loop
           muted
@@ -186,10 +174,8 @@ const displayTravellers = useMemo(
                     scrollbarWidth: 'none',
                     msOverflowStyle: 'none',
                   }}
-                  className="absolute top-full left-0 right-0 sm:-left-4 md:-left-12 lg:-left-32 xl:-left-48 lg:right-0 mt-3 w-full sm:w-96 lg:w-[380px] max-w-[95vw] bg-white/98 backdrop-blur-xl rounded-3xl shadow-2xl border p-4 sm:p-6 z-50 max-h-96 overflow-y-auto ">
+                  className="absolute top-full left-0 right-0 sm:-left-4 md:-left-12 lg:-left-32 xl:-left-48 lg:right-0 mt-3 w-full sm:w-96 lg:w-95 max-w-[95vw] bg-white/98 backdrop-blur-xl rounded-3xl shadow-2xl border p-4 sm:p-6 z-50 max-h-96 overflow-y-auto ">
                   <h3 className="font-semibold text-base sm:text-lg mb-4">Travellers & Class</h3>
-
-                  {/* Counters */}
                   {[
                     { label: "Adults", sub: "12 yrs or above", value: adults, set: setAdults },
                     { label: "Children", sub: "2 - 12 yrs", value: children, set: setChildren },
@@ -217,8 +203,6 @@ const displayTravellers = useMemo(
                       </div>
                     </div>
                   ))}
-
-                  {/* Class Selection */}
                   <div className="mt-6 py-3 border-t">
                     <p className="text-sm font-semibold mb-3">Class</p>
                     <div className="grid grid-cols-3 gap-2">
@@ -236,8 +220,6 @@ const displayTravellers = useMemo(
                       ))}
                     </div>
                   </div>
-
-                  {/* Done Button */}
                   <div className="mt-6 pt-4 border-t flex justify-center">
                     <button
                       onClick={() => setOpen(false)}
@@ -259,13 +241,12 @@ const displayTravellers = useMemo(
           </button>
         </div>
       </div>
-<div className="relative z-0">
-
-      <Flightcard />
-      <Hotelcard />
-      <Busescard />
-      <Trainscard />
-</div>
+      <div>
+        <Flightcard />
+        <Hotelcard />
+        <Busescard />
+        <Trainscard />
+      </div>
 
     </>
   );

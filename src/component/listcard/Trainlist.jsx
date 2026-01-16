@@ -2,17 +2,15 @@ import { useBooking } from "../../context/BookingContext";
 import { FaTrain } from "react-icons/fa";
 
 const TrainList = ({ train, onBook }) => {
-  const { selectedFlight } = useBooking(); // Context still uses 'selectedFlight' generic name
+  const { selectedTrain } = useBooking();
 
-  // Check if this train is the one currently selected in context
-  const isSelected = selectedFlight && selectedFlight.id === train.id;
+  const isSelected = selectedTrain && selectedTrain.id === train.id;
 
   return (
     <div
       className={`rounded-2xl border p-4 md:p-5 bg-white shadow-sm hover:shadow-xl transition
-      flex flex-col md:flex-row md:items-center md:justify-between gap-4 ${
-        isSelected ? "border-orange-500 ring-2 ring-orange-200" : "border-slate-200"
-      }`}
+      flex flex-col md:flex-row md:items-center md:justify-between gap-4 ${isSelected ? "border-orange-500 ring-2 ring-orange-200" : "border-slate-200"
+        }`}
     >
       {/* Train Info Section */}
       <div className="flex items-start gap-3">
@@ -20,14 +18,14 @@ const TrainList = ({ train, onBook }) => {
           <FaTrain />
         </div>
         <div>
-          <p className="text-sm text-slate-500">{train.number}</p> {/* e.g. 12055 */}
+          <p className="text-sm text-slate-500">{train.number}</p>
           <p className="text-lg font-semibold text-slate-900">
             {train.name} {/* e.g. Shatabdi Express */}
           </p>
           <div className="flex items-center gap-2 text-sm text-slate-600">
-             <span>{train.from}</span>
-             <span className="text-slate-400">→</span>
-             <span>{train.to}</span>
+            <span>{train.from}</span>
+            <span className="text-slate-400">→</span>
+            <span>{train.to}</span>
           </div>
           <p className="text-xs mt-1 text-slate-500">
             {train.date} • {train.travelClass || "SL"}
@@ -63,12 +61,15 @@ const TrainList = ({ train, onBook }) => {
           <p className="text-xs text-slate-500">per traveller</p>
         </div>
         <button
-          onClick={() => onBook(train)}
+          onClick={() => {
+            alert(`train booked!\n\n${train.airline}\n${train.from} → ${train.to}\nPrice: ₹${train.price}`);
+            onBook(train);
+          }}
           className={`px-4 py-2 rounded-full text-sm font-semibold w-full md:w-auto
-          ${isSelected 
-            ? "bg-emerald-600 text-white" 
-            : "bg-orange-600 hover:bg-orange-700 text-white"
-          }`}
+          ${isSelected
+              ? "bg-emerald-600 text-white"
+              : "bg-orange-600 hover:bg-orange-700 text-white"
+            }`}
         >
           {isSelected ? "Selected" : "Book Now"}
         </button>

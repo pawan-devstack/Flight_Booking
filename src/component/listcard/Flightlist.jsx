@@ -8,9 +8,8 @@ const FlightList = ({ flight, onBook }) => {
   return (
     <div
       className={`rounded-2xl border p-4 md:p-5 bg-white shadow-sm hover:shadow-xl transition
-      flex flex-col md:flex-row md:items-center md:justify-between gap-4 ${
-        isSelected ? "border-indigo-500 ring-2 ring-indigo-200" : "border-slate-200"
-      }`}
+      flex flex-col md:flex-row md:items-center md:justify-between gap-4 ${isSelected ? "border-indigo-500 ring-2 ring-indigo-200" : "border-slate-200"
+        }`}
     >
       <div className="flex items-start gap-3">
         <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center text-sm font-semibold text-indigo-700">
@@ -53,7 +52,10 @@ const FlightList = ({ flight, onBook }) => {
           <p className="text-xs text-slate-500">per passenger</p>
         </div>
         <button
-          onClick={() => onBook(flight)}
+          onClick={() => {
+            alert(`Flight booked!\n\n${flight.airline}\n${flight.from} → ${flight.to}\nPrice: ₹${flight.price}`);
+            onBook(flight);
+          }}
           className={`px-4 py-2 rounded-full text-sm font-semibold w-full md:w-auto
           ${isSelected ? "bg-emerald-600 text-white" : "bg-indigo-600 hover:bg-indigo-700 text-white"}`}
         >

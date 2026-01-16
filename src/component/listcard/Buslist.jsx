@@ -1,10 +1,7 @@
 import { useBooking } from "../../context/BookingContext";
 import { FaBus, FaStar } from "react-icons/fa";
-import { MdEventSeat } from "react-icons/md";
-
 
 const BusList = ({ bus, onBook }) => {
-  // Context se selected item uthaya (assuming aapne context me 'selectedBus' ya generic state rakha hai)
   const { selectedBus } = useBooking();
 
   const isSelected = selectedBus && selectedBus.id === bus.id;
@@ -12,17 +9,16 @@ const BusList = ({ bus, onBook }) => {
   return (
     <div
       className={`rounded-2xl border p-4 md:p-5 bg-white shadow-sm hover:shadow-xl transition-all duration-300
-      flex flex-col md:flex-row md:items-center md:justify-between gap-4 ${
-        isSelected ? "border-orange-500 ring-2 ring-orange-200" : "border-slate-200 hover:border-orange-200"
-      }`}
+      flex flex-col md:flex-row md:items-center md:justify-between gap-4 ${isSelected ? "border-orange-500 ring-2 ring-orange-200" : "border-slate-200 hover:border-orange-200"
+        }`}
     >
       {/* --- Left Section: Operator & Route --- */}
       <div className="flex items-start gap-4">
         {/* Operator Logo/Icon */}
         <div className="h-12 w-12 shrink-0 rounded-xl bg-orange-100 flex items-center justify-center text-xl text-orange-600">
-           <FaBus />
+          <FaBus />
         </div>
-        
+
         <div>
           <div className="flex items-center gap-2">
             <h3 className="text-base font-bold text-slate-900">{bus.operator}</h3>
@@ -35,7 +31,7 @@ const BusList = ({ bus, onBook }) => {
           <p className="text-sm font-medium text-slate-600 mt-0.5">
             {bus.from} <span className="text-slate-400">→</span> {bus.to}
           </p>
-          
+
           <p className="text-xs mt-1.5 text-slate-500 flex items-center gap-2">
             <span className="bg-slate-100 px-2 py-0.5 rounded text-slate-600">
               {bus.type} {/* e.g. "Volvo AC Sleeper" */}
@@ -61,7 +57,7 @@ const BusList = ({ bus, onBook }) => {
             </div>
           </div>
           <span className="text-[10px] text-orange-600 font-medium mt-1">
-             {bus.seatsAvailable} Seats Left
+            {bus.seatsAvailable} Seats Left
           </span>
         </div>
 
@@ -77,17 +73,19 @@ const BusList = ({ bus, onBook }) => {
           <p className="text-xl font-bold text-slate-900">₹{bus.price.toLocaleString()}</p>
           <p className="text-xs text-slate-500 line-through">₹{(bus.price + 200).toLocaleString()}</p>
         </div>
-        
+
         <button
-          onClick={() => onBook(bus)}
+          onClick={() => {
+            alert(`bus booked!\n\n${bus.airline}\n${bus.from} → ${bus.to}\nPrice: ₹${bus.price}`);
+            onBook(bus);
+          }}
           className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold w-full md:w-auto justify-center transition-all shadow-sm hover:shadow-md
-          ${isSelected 
-            ? "bg-green-600 text-white hover:bg-green-700" 
-            : "bg-orange-500 hover:bg-orange-600 text-white"
-          }`}
+          ${isSelected
+              ? "bg-green-600 text-white hover:bg-green-700"
+              : "bg-orange-500 hover:bg-orange-600 text-white"
+            }`}
         >
-          <MdEventSeat className="text-lg" />
-          {isSelected ? "Selected" : "Select Seat"}
+          {isSelected ? "Selected" : "Book Now"}
         </button>
       </div>
     </div>

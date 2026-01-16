@@ -42,6 +42,25 @@ const Flights = () => {
   const total = adults + children + infants;
   const displayTravellers = `${total} Traveller${total !== 1 ? 's' : ''}, ${travelClass}`;
 
+  useEffect(() => {
+    const fromParam = searchParamsUrl.get("from");
+    const toParam = searchParamsUrl.get("to");
+    const dateParam = searchParamsUrl.get("date");
+
+    if (fromParam) setFrom(fromParam);
+    if (toParam) setTo(toParam);
+    if (dateParam) setDeparture(new Date(dateParam));
+
+    if (fromParam || toParam || dateParam) {
+      setSearchFilters({
+        from: fromParam,
+        to: toParam,
+        date: dateParam,
+      });
+    }
+  }, [searchParamsUrl]);
+
+
   const filteredFlights = useMemo(() => {
     let list = [...flights]
 
@@ -97,7 +116,7 @@ const Flights = () => {
       flightId: flight.id,
       date: flight.date,
       departureTime: flight.departureTime,
-      type:'flight'
+      type: 'flight'
     };
 
     const existingBookings = JSON.parse(localStorage.getItem("bookings") || "[]");
@@ -312,7 +331,7 @@ const Flights = () => {
                     scrollbarWidth: 'none',
                     msOverflowStyle: 'none',
                   }}
-                  className="absolute top-full left-0 right-0 sm:-left-4 md:-left-12 lg:-left-32 xl:-left-48 lg:left-auto lg:right-0 mt-3 w-full sm:w-96 lg:w-[380px] max-w-[95vw] bg-white/98 backdrop-blur-xl rounded-3xl shadow-2xl border p-4 sm:p-6 z-[9999] max-h-96 overflow-y-auto ">
+                  className="absolute top-full left-0 right-0 sm:-left-4 md:-left-12 lg:-left-32 xl:-left-48 lg:right-0 mt-3 w-full sm:w-96 lg:w-95 max-w-[95vw] bg-white/98 backdrop-blur-xl rounded-3xl shadow-2xl border p-4 sm:p-6 z-50 max-h-96 overflow-y-auto ">
                   <h3 className="font-semibold text-base sm:text-lg mb-4">Travellers & Class</h3>
                   {[
                     { label: "Adults", sub: "12 yrs or above", value: adults, set: setAdults },

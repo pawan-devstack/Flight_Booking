@@ -1,53 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { FaUser, FaSignInAlt, FaSearch, FaChevronDown, FaPhone, FaSignOutAlt } from 'react-icons/fa';
-import { NavLink, useNavigate } from 'react-router-dom';
-import ReactLogo from '../assets/airplane-logo.jpg';
-import FlightIcon from '../assets/Flight.webp';
-import HotelIcon from '../assets/Hotel.webp';
-import BusIcon from '../assets/Bus.webp';
-import TrainIcon from '../assets/Train.webp';
+import { NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+
+import ReactLogo from "../assets/airplane-logo.jpg";
+import FlightIcon from "../assets/Flight.webp";
+import HotelIcon from "../assets/Hotel.webp";
+import BusIcon from "../assets/Bus.webp";
+import TrainIcon from "../assets/Train.webp";
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const [userName, setUserName] = useState("");
+
   const navigate = useNavigate();
+  const { user, isAuthenticated, logout } = useAuth();
 
-  useEffect(() => {
-    const userdata = localStorage.getItem("userdata");
-    const currentUser = localStorage.getItem("currentuser");
-
-    if (userdata) {
-      try {
-        const user = JSON.parse(userdata);
-        setUserName(`${user.name} ${user.lastname}`);
-      } catch (e) {
-        console.error("userdata parse error:", e);
-      }
-    } else if (currentUser) {
-      try {
-        const user = JSON.parse(currentUser);
-        setUserName(`${user.name} ${user.lastname}`);
-      } catch (e) {
-        console.error("current_user parse error:", e);
-      }
-    }
-  }, []);
+  const userName = user?.name || "";
 
   const handleLogout = () => {
-    localStorage.removeItem("userdata");
-    localStorage.removeItem("currentuser");
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
-    localStorage.removeItem("isLoggedIn");
-    localStorage.removeItem("userProfile");
-    setUserName("");
+    logout();
     setProfileOpen(false);
     navigate("/");
   };
-
-  const isLoggedIn = !!userName;
-
   return (
     <nav className="bg-white shadow-xl sticky top-0 z-50 border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -129,7 +104,7 @@ const Navbar = () => {
                   <div className="absolute top-full right-0 mt-2 w-60 bg-white/95 backdrop-blur-md border border-gray-100 rounded-2xl shadow-2xl py-3 px-3 z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
 
                     {/* Conditional Dropdown Content */}
-                    {isLoggedIn ? (
+                    {isAuthenticated ? (
                       <>
                         {/* Logged In - Welcome + Profile + Logout */}
                         <div className="p-3 text-center border-b border-gray-200 mb-3">
